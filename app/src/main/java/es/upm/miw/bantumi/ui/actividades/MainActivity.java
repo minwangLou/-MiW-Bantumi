@@ -23,6 +23,7 @@ import java.util.Locale;
 import es.upm.miw.bantumi.ui.fragmentos.FinalAlertDialog;
 import es.upm.miw.bantumi.R;
 import es.upm.miw.bantumi.dominio.logica.JuegoBantumi;
+import es.upm.miw.bantumi.ui.fragmentos.RestartDialogFragment;
 import es.upm.miw.bantumi.ui.viewmodel.BantumiViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -138,6 +139,11 @@ public class MainActivity extends AppCompatActivity {
                         .setPositiveButton(android.R.string.ok, null)
                         .show();
                 return true;
+            case R.id.opcReiniciarPartida:
+                new RestartDialogFragment().show(getSupportFragmentManager(), "RESTART_DIALOG");
+                return true;
+
+
 
             // @TODO!!! resto opciones
 
