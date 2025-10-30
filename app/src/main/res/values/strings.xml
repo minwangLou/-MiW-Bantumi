@@ -50,6 +50,8 @@
     <!-- Diálogo Reiniciar -->
     <string name="txtDialogoReiniciarTitulo">Reiniciar la partida</string>
     <string name="txtDialogoReiniciarMensaje">¿Deséa reiniciar la partida?</string>
+    <string name="titulo_partido_gurdado">Lista de partido guardado</string>
+    <string name="boton_eliminar_texto">Eliminar todos los guardados</string>
 
 
 </resources>

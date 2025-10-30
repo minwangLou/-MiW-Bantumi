@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<androidx.constraintlayout.widget.ConstraintLayout-->
+<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    android:id="@+id/main"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    tools:context=".ui.actividades.SavedGamesActivity">-->
+
+
+
+<!--  </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/saved_games"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:padding="16dp">
+
+  <TextView
+      android:id="@+id/tvTitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="Partidas guardadas"
+      android:textSize="20sp"
+      android:textStyle="bold"
+      android:gravity="center"
+      android:padding="8dp"
+      android:background="#D1D5DC"
+      android:textColor="@android:color/black" />
+
+  <ListView
+      android:id="@+id/lvSavedGames"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:divider="@android:color/darker_gray"
+      android:dividerHeight="1dp" />
+
+  <!-- 底部按钮 -->
+  <Button
+      android:id="@+id/btnDeleteAll"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/boton_eliminar_texto"
+      android:backgroundTint="@android:color/holo_red_light"
+      android:textAllCaps="false" />
+
+
+</LinearLayout>
