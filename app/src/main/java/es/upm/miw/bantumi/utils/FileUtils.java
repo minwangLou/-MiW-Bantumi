@@ -13,7 +13,7 @@ import es.upm.miw.bantumi.modelos.SavedGame;
 
 public class FileUtils {
 
-    public static void guardarPartido(Context context, SavedGame partidoParaGuardar) {
+    public static void guardarPartida(Context context, SavedGame partidoParaGuardar) {
         Gson gson = new Gson();
         String json = gson.toJson(partidoParaGuardar);
 

@@ -16,7 +16,7 @@
     <string name="txtReiniciarPartida">Reiniciar</string>
     <string name="txtOpcionGuardar">Guardar Partida</string>
     <string name="txtOpcionRecuperar">Recuperar Partida</string>
-    <string name="txtOpcionMejoresResultados">Mejores Resultados</string>
+    <string name="txtOpcionMejoresResultados">Puntuación partida</string>
 
     <!-- Acerca de -->
     <string name="aboutText">Acerca de</string>

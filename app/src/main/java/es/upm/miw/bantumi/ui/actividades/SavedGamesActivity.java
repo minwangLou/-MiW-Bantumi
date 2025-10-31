@@ -27,7 +27,7 @@ import java.util.List;
 
 import es.upm.miw.bantumi.R;
 import es.upm.miw.bantumi.modelos.SavedGame;
-import static es.upm.miw.bantumi.utils.FileUtils.guardarPartido;
+import static es.upm.miw.bantumi.utils.FileUtils.guardarPartida;
 
 public class SavedGamesActivity extends AppCompatActivity {
 
@@ -35,7 +35,7 @@ public class SavedGamesActivity extends AppCompatActivity {
     private ArrayAdapter<String> adapter;
     private List<SavedGame> partidas;
     private List<String> nombres;
-    private SavedGame partidoActual;
+    private SavedGame partidaActual;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -44,7 +44,7 @@ public class SavedGamesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_saved_games);
 
         Intent intent = getIntent();
-        partidoActual = (SavedGame) intent.getSerializableExtra("savedGame");
+        partidaActual = (SavedGame) intent.getSerializableExtra("savedGame");
 
         lvSavedGames = findViewById(R.id.lvSavedGames);
         Button btnDeleteAll = findViewById(R.id.btnDeleteAll);
@@ -59,7 +59,7 @@ public class SavedGamesActivity extends AppCompatActivity {
         lvSavedGames.setAdapter(adapter);
 
 
-        // Mostrar dialogo al pulsar un partido guardado
+        // Mostrar dialogo al pulsar un partida guardada
         lvSavedGames.setOnItemClickListener((parent, view, position, id) -> {
             SavedGame selected = partidas.get(position);
             mostrarDialogo(selected, position);
@@ -109,7 +109,7 @@ public class SavedGamesActivity extends AppCompatActivity {
                 .setItems(opciones, (dialog, which) -> {
                     switch (which) {
                         case 0: // Cargar
-                            cargarPartido(partida);
+                            cargarPartida(partida);
                             break;
 
                         case 1: // Renombrar
@@ -118,7 +118,7 @@ public class SavedGamesActivity extends AppCompatActivity {
 
                         case 2: // Eliminar
                             File file = new File(directorio, "partida_" + partida.getId() + ".json");
-                            eliminarUnPartido(file, index);
+                            eliminarUnPartida(file, index);
                             break;
 
                         case 3: // Cancelar
@@ -129,17 +129,17 @@ public class SavedGamesActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void cargarPartido (SavedGame partidoSeleccionado){
-        if (partidoActual.getGameInfo().equals(partidoSeleccionado.getGameInfo())){
+    private void cargarPartida(SavedGame partidaSeleccionado){
+        if (partidaActual.getGameInfo().equals(partidaSeleccionado.getGameInfo())){
             finish();
         }else{
             new AlertDialog.Builder(this)
                     .setTitle("Confirmación")
-                    .setMessage("¿Desea cargar el partido seleccionado?")
+                    .setMessage("¿Desea cargar el partida seleccionado?")
                     .setPositiveButton("Sí", (dialog, which) -> {
 
                         Intent intent = new Intent(this, MainActivity.class);
-                        intent.putExtra("savedGame",partidoSeleccionado);
+                        intent.putExtra("savedGame",partidaSeleccionado);
                         setResult(RESULT_OK, intent);
                         finish();
                 })
@@ -160,7 +160,7 @@ public class SavedGamesActivity extends AppCompatActivity {
                     String nuevoNombre = input.getText().toString().trim();
                     if (!nuevoNombre.isEmpty()) {
                         partida.setName(nuevoNombre);
-                        guardarPartido(this,partida);          // 写回 JSON
+                        guardarPartida(this,partida);          // 写回 JSON
                         nombres.set(index, nuevoNombre);   // 更新显示列表
                         adapter.notifyDataSetChanged();    // 刷新 ListView
                     }
@@ -170,10 +170,10 @@ public class SavedGamesActivity extends AppCompatActivity {
     }
 
 
-    private void eliminarUnPartido(File file, int index){
+    private void eliminarUnPartida(File file, int index){
         new AlertDialog.Builder(this)
                 .setTitle("Confirmar")
-                .setMessage("¿Eliminar el partido guardado?")
+                .setMessage("¿Eliminar el partida guardado?")
                 .setPositiveButton("Sí", (dialog, which) -> {
                     if (file.exists()) file.delete();
 
@@ -218,9 +218,7 @@ public class SavedGamesActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item){
         switch (item.getItemId()) {
             case R.id.opcVolver:
-
                 finish();
-
                 return true;
 
         }

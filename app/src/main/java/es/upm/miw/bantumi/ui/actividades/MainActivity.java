@@ -1,11 +1,11 @@
 package es.upm.miw.bantumi.ui.actividades;
 
-import static es.upm.miw.bantumi.utils.FileUtils.guardarPartido;
+import static es.upm.miw.bantumi.utils.FileUtils.guardarPartida;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -14,8 +14,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -27,19 +25,15 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.Gson;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import es.upm.miw.bantumi.modelos.Puntuacion;
+import es.upm.miw.bantumi.modelos.PuntuacionRepositorio;
 import es.upm.miw.bantumi.modelos.SavedGame;
 import es.upm.miw.bantumi.ui.fragmentos.FinalAlertDialog;
 import es.upm.miw.bantumi.R;
@@ -47,6 +41,10 @@ import es.upm.miw.bantumi.dominio.logica.JuegoBantumi;
 import es.upm.miw.bantumi.ui.fragmentos.RestartDialogFragment;
 import es.upm.miw.bantumi.ui.viewmodel.BantumiViewModel;
 import es.upm.miw.bantumi.dominio.logica.JuegoBantumi.*;
+import es.upm.miw.bantumi.enums.ResultadoPartida;
+
+import androidx.preference.PreferenceManager;
+import androidx.room.Room;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,14 +52,19 @@ public class MainActivity extends AppCompatActivity {
     public JuegoBantumi juegoBantumi;
     private BantumiViewModel bantumiVM;
     int numInicialSemillas;
-    private ActivityResultLauncher<Intent> launcherRecuperarPartido;
+    private ActivityResultLauncher<Intent> launcherRecuperarPartida;
+
+    private PuntuacionRepositorio puntuacionRepositorio;
+    private List<Puntuacion> puntuaciones;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        registrarLauncherRecuperarPartido();
+        registrarLauncherRecuperarPartida();
+
+        instanciarRepositorio();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -153,10 +156,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Intent intent;
         switch (item.getItemId()) {
-//            case R.id.opcAjustes: // @todo Preferencias
-//                startActivity(new Intent(this, BantumiPrefs.class));
-//                return true;
+            case R.id.opcAjustes: // @todo Preferencias
+                startActivity(new Intent(this, BantumiPrefs.class));
+                return true;
             case R.id.opcAcercaDe:
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.aboutTitle)
@@ -168,15 +172,19 @@ public class MainActivity extends AppCompatActivity {
                 new RestartDialogFragment().show(getSupportFragmentManager(), "RESTART_DIALOG");
                 return true;
             case R.id.opcGuardarPartida:
-                guardarPartido(this, getGameInfo ());
+                guardarPartida(this, getGameInfo ());
                 return true;
 
             case R.id.opcRecuperarPartida:
-                Intent intent = new Intent (MainActivity.this, SavedGamesActivity.class);
+                intent = new Intent (MainActivity.this, SavedGamesActivity.class);
                 intent.putExtra("savedGame", getGameInfo());
 
-                launcherRecuperarPartido.launch(intent);
+                launcherRecuperarPartida.launch(intent);
                 return true;
+
+            case R.id.opcMejoresResultados:
+                intent = new Intent (MainActivity.this, PuntuacionActivity.class);
+                startActivity(intent);
 
             // @TODO!!! resto opciones
 
@@ -227,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
             texto = "¡¡¡ EMPATE !!!";
         }
 
-        // @TODO guardar puntuación
+        guardarPuntuacion(juegoBantumi.getSemillas(6), juegoBantumi.getSemillas(13));
 
         // terminar
         new FinalAlertDialog(texto).show(getSupportFragmentManager(), "ALERT_DIALOG");
@@ -237,11 +245,11 @@ public class MainActivity extends AppCompatActivity {
         //tiempo exacto cuando almaceno
         long timestamp = System.currentTimeMillis();
 
-        //el nombre del partido guardado
+        //el nombre del partida guardado
         Date date = new Date(timestamp);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String formattedDate = sdf.format(date);
-        String name = "Partido " + formattedDate;
+        String name = "Partida " + formattedDate;
 
         List<Integer> gameInfo = new ArrayList<Integer>();
         for (int i = 0; i < JuegoBantumi.NUM_POSICIONES; i++){
@@ -253,8 +261,8 @@ public class MainActivity extends AppCompatActivity {
         return new SavedGame(timestamp, name, gameInfo, turno);
     }
 
-    private void registrarLauncherRecuperarPartido() {
-        launcherRecuperarPartido = registerForActivityResult(
+    private void registrarLauncherRecuperarPartida() {
+        launcherRecuperarPartida = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
@@ -262,24 +270,56 @@ public class MainActivity extends AppCompatActivity {
                         if (data != null) {
                             SavedGame partidaRecuperada = (SavedGame) data.getSerializableExtra("savedGame");
                             // 处理恢复游戏
-                            recuperarPartido(partidaRecuperada);
+                            recuperarPartida(partidaRecuperada);
                         }
                     }
                 }
         );
     }
 
-    // 启动 SavedGamesActivity
-    private void abrirSavedGames() {
-        Intent intent = new Intent(this, SavedGamesActivity.class);
-        launcherRecuperarPartido.launch(intent);
+
+    private void recuperarPartida(SavedGame partidaARecuperar){
+            for (int i = 0; i < JuegoBantumi.NUM_POSICIONES; i++){
+                bantumiVM.setNumSemillas(i,partidaARecuperar.getGameInfo().get(i));
+            }
+            bantumiVM.setTurno(partidaARecuperar.getTurno());
     }
 
-    private void recuperarPartido (SavedGame partidoARecuperar){
-            for (int i = 0; i < JuegoBantumi.NUM_POSICIONES; i++){
-                bantumiVM.setNumSemillas(i,partidoARecuperar.getGameInfo().get(i));
-            }
-            bantumiVM.setTurno(partidoARecuperar.getTurno());
+    private void instanciarRepositorio (){
+        puntuacionRepositorio = Room.databaseBuilder(
+                getApplicationContext(),
+                PuntuacionRepositorio.class,
+                PuntuacionRepositorio.BASE_DATOS
+                )
+                .allowMainThreadQueries()
+                .build();
+    }
+
+    private void guardarPuntuacion (int puntuacionJugador1, int puntuacionJugador2){
+
+        //Obtener nombre del jugador a partir de la preferencia
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String nombreJugador = prefs.getString("nombre_jugador", "Jugador");
+
+        ResultadoPartida resultado;
+        if (puntuacionJugador1 > puntuacionJugador2){
+            resultado = ResultadoPartida.JUGADOR1_GANADO;
+        }else if (puntuacionJugador1 < puntuacionJugador2)
+            resultado = ResultadoPartida.JUGADOR2_GANADO;
+        else{
+            resultado = ResultadoPartida.EMPATADO;
+        }
+
+        //Obtener fecha actual
+        long fechaActual = System.currentTimeMillis();
+
+        Puntuacion resultadoPartido = new Puntuacion(
+                nombreJugador,resultado, fechaActual, puntuacionJugador1, puntuacionJugador2
+        );
+
+        puntuacionRepositorio.puntuacionDAO().insert(resultadoPartido);
+        Toast.makeText(this, "Puntuación guardada", Toast.LENGTH_SHORT).show();
+
     }
 
 

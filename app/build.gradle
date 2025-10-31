@@ -44,6 +44,10 @@ dependencies {
     implementation libs.androidx.activity
 
     implementation libs.gson
+    implementation libs.androidx.room.common.jvm
+    implementation libs.androidx.preference
+    implementation libs.androidx.room.runtime
+    annotationProcessor libs.androidx.room.compiler
 }
 
 java {

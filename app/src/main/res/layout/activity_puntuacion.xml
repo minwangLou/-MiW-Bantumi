@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_puntuacion"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".ui.actividades.PuntuacionActivity">
+
+    <TextView
+        android:id="@+id/tv_puntuacion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Puntuacion Obtenido"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="8dp"
+        android:background="#D1D5DC"
+        android:textColor="@android:color/black" />
+
+    <ListView
+        android:id="@+id/lv_puntuacion"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp" />
+
+    <Button
+        android:id="@+id/btnTop10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mostrar 10 mejores puntuaciones"
+        android:backgroundTint="@android:color/holo_blue_light"
+        android:textAllCaps="false" />
+
+</LinearLayout>
