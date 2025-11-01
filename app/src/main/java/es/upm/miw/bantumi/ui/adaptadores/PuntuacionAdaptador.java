@@ -41,7 +41,7 @@ public class PuntuacionAdaptador  extends ArrayAdapter<Puntuacion>{
         TextView tvFecha = convertView.findViewById(R.id.tvFecha);
         TextView tvPuntuaciones = convertView.findViewById(R.id.tvPuntuaciones);
 
-        tvNombre.setText("Nombre Jugador: " + p.getNombreJugador());
+        tvNombre.setText("Nombre: " + p.getNombreJugador());
         tvResultado.setText("Resultado: " + p.getResultadoPartida().name());
         tvFecha.setText("Fecha: " + sdf.format(p.getFecha()));
         tvPuntuaciones.setText("Puntuación Jugador 1: " + p.getPuntuacionJugador1() + " | Puntuación Jugador 2: " + p.getPuntuacionJugador2());

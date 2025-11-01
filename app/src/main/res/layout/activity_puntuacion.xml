@@ -33,7 +33,7 @@
         android:id="@+id/btnTop10"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Mostrar 10 mejores puntuaciones"
+        android:text="@string/mostrar_10_mejores_puntuaciones"
         android:backgroundTint="@android:color/holo_blue_light"
         android:textAllCaps="false" />
 

@@ -55,7 +55,10 @@ public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> launcherRecuperarPartida;
 
     private PuntuacionRepositorio puntuacionRepositorio;
-    private List<Puntuacion> puntuaciones;
+
+    private SharedPreferences prefs;
+
+    public Turno turno;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,10 @@ public class MainActivity extends AppCompatActivity {
 
         instanciarRepositorio();
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        turno = obtenerTurnoPreferencia(prefs);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -75,8 +82,21 @@ public class MainActivity extends AppCompatActivity {
         // Instancia el ViewModel y el juego, y asigna observadores a los huecos
         numInicialSemillas = getResources().getInteger(R.integer.intNumInicialSemillas);
         bantumiVM = new ViewModelProvider(this).get(BantumiViewModel.class);
-        juegoBantumi = new JuegoBantumi(bantumiVM, JuegoBantumi.Turno.turnoJ1, numInicialSemillas);
+        juegoBantumi = new JuegoBantumi(bantumiVM, turno, numInicialSemillas);
         crearObservadores();
+    }
+
+    private Turno obtenerTurnoPreferencia (SharedPreferences prefs){
+        Turno turno;
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String prefTurno = prefs.getString("jugador_inical", "Jugador 1");
+        if (prefTurno.equals("Jugador 1")) {
+            turno = Turno.turnoJ1;
+        }
+        else {
+            turno = Turno.turnoJ2;
+        }
+        return turno;
     }
 
     /**
@@ -169,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
                         .show();
                 return true;
             case R.id.opcReiniciarPartida:
+                turno = obtenerTurnoPreferencia(prefs);
                 new RestartDialogFragment().show(getSupportFragmentManager(), "RESTART_DIALOG");
                 return true;
             case R.id.opcGuardarPartida:
@@ -298,7 +319,6 @@ public class MainActivity extends AppCompatActivity {
     private void guardarPuntuacion (int puntuacionJugador1, int puntuacionJugador2){
 
         //Obtener nombre del jugador a partir de la preferencia
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String nombreJugador = prefs.getString("nombre_jugador", "Jugador");
 
         ResultadoPartida resultado;

@@ -52,6 +52,7 @@
     <string name="txtDialogoReiniciarMensaje">¿Deséa reiniciar la partida?</string>
     <string name="titulo_partido_gurdado">Lista de partido guardado</string>
     <string name="boton_eliminar_texto">Eliminar todos los guardados</string>
+    <string name="mostrar_10_mejores_puntuaciones">Mostrar 10 mejores puntuaciones</string>
 
 
 </resources>

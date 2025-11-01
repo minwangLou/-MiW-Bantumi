@@ -1,6 +1,8 @@
 package es.upm.miw.bantumi.ui.actividades;
 
 import android.app.AlertDialog;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +34,8 @@ public class PuntuacionActivity extends AppCompatActivity {
     private PuntuacionRepositorio puntuacionRepositorio;
     PuntuacionAdaptador adapter;
     List<Puntuacion> puntuaciones;
+
+    private boolean mostrandoTop10 = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +70,21 @@ public class PuntuacionActivity extends AppCompatActivity {
         lvPuntuaciones.setAdapter(adapter);
     }
     private void cargarTop10() {
-        puntuaciones = puntuacionRepositorio.puntuacionDAO().getTop10score();
-        adapter = new PuntuacionAdaptador(this, puntuaciones);
-        lvPuntuaciones.setAdapter(adapter);
+        if(mostrandoTop10 == false){
+            puntuaciones = puntuacionRepositorio.puntuacionDAO().getTop10score();
+            btnTop10.setText("Restaurar");
+            btnTop10.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#DEB887")));
+            mostrandoTop10 = true;
+        }else{
+            puntuaciones = puntuacionRepositorio.puntuacionDAO().getAll();
+            btnTop10.setText(R.string.mostrar_10_mejores_puntuaciones);
+            btnTop10.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#ff33b5e5")));
+            mostrandoTop10 = false;
+        }
+        adapter.clear();
+        adapter.addAll(puntuaciones);
+        adapter.notifyDataSetChanged();
+
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
