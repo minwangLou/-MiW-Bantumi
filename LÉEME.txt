@@ -1,0 +1,26 @@
+Funcionalidades Implementadas
+1. Reiniciar partida:
+Se ha añadido en el método onOptionsItemSelected de MainActivity la función que permite al jugador reiniciar la partida al pulsar el icono correspondiente.
+Al pulsarlo, se muestra un diálogo de confirmación: si el jugador elige “Sí”, la partida se reinicia; en caso contrario, el diálogo se cierra sin realizar ninguna acción.
+2. Guardar partida:
+Al pulsar el icono de guardar, la partida actual se almacena automáticamente en la carpeta interna de la aplicación.
+Cada partida se guarda en un fichero  independiente en formato JSON, utilizando la librería Gson y una clase entidad está los atributos y métodos que son necesarios para almacenar la información del partida.
+Entre los datos almacenados se incluyen: la fecha y hora del guardado (como nombre por defecto con formato yyyy-MM-dd HH:mm), las semillas que tiene cada casilla y el turno actual del juego.
+3. Recuperar partida:
+Se ha implementado una nueva actividad que muestra una lista con todas las partidas guardadas.
+Al seleccionar una partida, se abre un diálogo con distintas opciones: cargar, renombrar, eliminar o cancelar.
+Si el jugador elige cargar, el sistema comprueba si la partida seleccionada es diferente de la actual; en caso afirmativo, se muestra un segundo diálogo de confirmación antes de proceder a la carga. Si son iguales, simplemente se cierra la actividad sin cambios.
+Además, se ha añadido una opción para eliminar todas las partidas guardadas, así como un menú que permite regresar al MainActivity.
+4. Preferencias:
+Se ha implementado una pantalla de preferencias que permite modificar el nombre del jugador y el jugador que comienza la partida.
+Desde el menú de esta pantalla, el jugador puede volver fácilmente a la página principal.
+5. Guardar puntuaciones:
+Implementado mediante Room, se almacena en una base de datos el resultado de cada partida finalizada.
+Se registran los siguientes atributos: uid, fecha, nombre del jugador, resultado de la partida y la puntuación obtenida por cada jugador.
+Para ello, se ha definido una entidad, un DAO y un repositorio, que gestionan la creación y persistencia de los datos.
+6. Mejores resultados:
+Se ha creado una actividad que permite visualizar el histórico de puntuaciones.
+En esa pantalla, un botón permite alternar entre dos modos:
+- Mostrar los diez mejores resultados, ordenados por el mayor número de semillas obtenidas.
+- Restaurar la vista completa de todas las puntuaciones.
+Además, el menú ofrece las opciones de eliminar todos los resultados y de volver al menú principal.

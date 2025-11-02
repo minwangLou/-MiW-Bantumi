@@ -14,8 +14,11 @@ public interface PuntuacionDAO{
     @Query("SELECT * FROM " + Puntuacion.TABLA)
     List<Puntuacion> getAll();
 
-    @Query("SELECT * FROM " + Puntuacion.TABLA
-     + " ORDER BY puntuacionJugador1 DESC, puntuacionJugador2 DESC LIMIT 10")
+    @Query("SELECT * FROM " + Puntuacion.TABLA +
+            " ORDER BY CASE " +
+            "WHEN puntuacionJugador1 >= puntuacionJugador2 THEN puntuacionJugador1 " +
+            "ELSE puntuacionJugador2 END DESC " +
+            "LIMIT 10")
     List<Puntuacion> getTop10score();
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
